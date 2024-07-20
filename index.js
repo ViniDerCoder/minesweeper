@@ -19,16 +19,51 @@ const games = {
         bombs: 750
     },
     "bigbombs": {
-        type: "special",
+        type: "bigbombs",
         width: 30,
         bombs: 30
-    }
+    },
+    "bigbigbombs": {
+        type: "bigbombs",
+        width: 60,
+        bombs: 90
+    },
+    "noflags": {
+        type: "noflags",
+        width: 10,
+        bombs: 10
+    },
+    "bignoflags": {
+        type: "noflags",
+        width: 40,
+        bombs: 125
+    },
+    "nonumbers": {
+        type: "nonumbers",
+        width: 10,
+        bombs: 10
+    },
+    "chunkyhand": {
+        type: "chunkyhand",
+        width: 10,
+        bombs: 10
+    },
+    "gravitation": {
+        type: "gravitation",
+        width: 10,
+        bombs: 10
+    },
+    "biggravitation": {
+        type: "gravitation",
+        width: 30,
+        bombs: 80
+    },
 }
 
 
 const minesweeper = new Minesweeper();
 
-let selectedGame = 'bigbombs';
+let selectedGame = 'normal';
 
 let flagMode = false;
 
@@ -74,14 +109,14 @@ function reset(id) {
         gridElement.appendChild(gridItem);
     }
 
-    if(games[id].type === "special") minesweeper.initSpecial(id, games[id].width, games[id].bombs);
+    if(games[id].type !== "normal") minesweeper.initSpecial(games[id].type, games[id].width, games[id].bombs);
     else minesweeper.init(games[id].width, games[id].bombs);
     minesweeper.render();
 
     gameInfoBar.innerText = 'Minesweeper (' + selectedGame + ')';
     flagMode = false;
     flagButton.dataset.activated = false;
-    flagCounter.innerText = minesweeper.bombs;
+    flagCounter.innerText = minesweeper.bombs - minesweeper.flags;
 }
 
 reset(selectedGame);

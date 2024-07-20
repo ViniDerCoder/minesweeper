@@ -26,6 +26,22 @@ export class Minesweeper {
                 this.special = new BigBombMinesweeper();
                 this.special.init(size, mines);
             break;
+            case "noflags":
+                this.special = new NoFlagMinesweeper();
+                this.special.init(size, mines);
+            break;
+            case "nonumbers":
+                this.special = new NoNumbersMinesweeper();
+                this.special.init(size, mines);
+            break;
+            case "chunkyhand":
+                this.special = new ChunkyHandMineSweeper();
+                this.special.init(size, mines);
+            break;
+            case "gravitation":
+                this.special = new GravitationMinesweeper();
+                this.special.init(size, mines);
+            break;
         }
     }
 
@@ -196,6 +212,58 @@ export class Minesweeper {
     }
 }
 
+
+
+class NoFlagMinesweeper extends Minesweeper {
+    get flags() {
+        return this.mines;
+    }
+
+    userClick(x, y, flag = false) {
+        if(this.gameLocked) return;
+        if(flag) return;
+        console.log('user clicked', x, y, flag);
+        this.click(x, y, flag);
+        this.clicksMade++;
+    }
+}
+
+
+class NoNumbersMinesweeper extends Minesweeper {
+    render() {
+        updateGrid(this.board.map(row => row.map(cell => cell > 0 ? -4 : cell)))
+    }
+}
+
+
+class ChunkyHandMineSweeper extends Minesweeper {
+    userClick(x, y, flag = false) {
+        if(this.gameLocked) return;
+        console.log('user clicked', x, y, flag);
+        this.click(x, y, flag);
+        this.click(x + 1, y, flag);
+        this.click(x - 1, y, flag);
+        this.click(x, y + 1, flag);
+        this.click(x, y - 1, flag);
+
+        this.clicksMade++;
+    }
+}
+
+
+class GravitationMinesweeper extends Minesweeper {
+    userClick(x, y, flag = false) {
+        if(this.gameLocked) return;
+        console.log('user clicked', x, y, flag);
+        while(y < this.size - 1 && this.board[y+1][x] === -1) {
+            console.log('falling', x, y);
+            y++;
+        }
+        this.click(x, y, flag);
+
+        this.clicksMade++;
+    }
+}
 
 
 class BigBombMinesweeper extends Minesweeper {
