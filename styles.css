@@ -1,3 +1,5 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
 body {
     margin: 0;
     padding: 0;
@@ -82,4 +84,46 @@ body {
 
 .game-board > *[data-style="dark"]:hover {
     background-color: #7a995db6;
+}
+
+.game-board > *[data-style="light"][data-bomb="false"] {
+    cursor: not-allowed;
+    background-color: #e5c29f;
+}
+
+.game-board > *[data-style="dark"][data-bomb="false"] {
+    cursor: not-allowed;
+    background-color: #d7b899;
+}
+
+.game-board > *[data-style="light"][data-bomb="true"] {
+    cursor: not-allowed;
+    background-color: #d32f2f;
+}
+
+.game-board > *[data-style="dark"][data-bomb="true"] {
+    cursor: not-allowed;
+    background-color: #972121;
+}
+
+.game-board > *[data-bomb="true"]::before {
+    color: #fff;
+    content: "\f1e2";
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+}
+
+.game-board > *[data-style="light"][data-bomb="true"]:hover {
+    background-color: #d32f2f;
+}
+
+.game-board > *[data-style="dark"][data-bomb="true"]:hover {
+    background-color: #972121;
+}
+
+.game-board > *[data-flag="true"]:before {
+    color: #d32f2f;
+    content: "\f024";
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
 }
