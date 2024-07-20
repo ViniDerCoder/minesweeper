@@ -58,6 +58,16 @@ const games = {
         width: 30,
         bombs: 80
     },
+    "teleport": {
+        type: "teleportingbombs",
+        width: 10,
+        bombs: 10
+    },
+    "bigteleport": {
+        type: "teleportingbombs",
+        width: 30,
+        bombs: 80
+    },
 }
 
 
@@ -158,6 +168,7 @@ export function updateGrid(grid) {
                 gridItem.dataset.flag = true;
             } else if(grid[row][cell] === -4) {
                 gridItem.dataset.bomb = false;
+                gridItem.innerText = '';
             } else if(grid[row][cell] === -2) {
                 gridItem.dataset.bomb = true;
             } else if(grid[row][cell] === -1) {

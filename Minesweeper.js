@@ -25,28 +25,32 @@ export class Minesweeper {
             case "bigbombs":
                 this.special = new BigBombMinesweeper();
                 this.special.init(size, mines);
-            break;
+                break;
             case "noflags":
                 this.special = new NoFlagMinesweeper();
                 this.special.init(size, mines);
-            break;
+                break;
             case "nonumbers":
                 this.special = new NoNumbersMinesweeper();
                 this.special.init(size, mines);
-            break;
+                break;
             case "chunkyhand":
                 this.special = new ChunkyHandMineSweeper();
                 this.special.init(size, mines);
-            break;
+                break;
             case "gravitation":
                 this.special = new GravitationMinesweeper();
                 this.special.init(size, mines);
-            break;
+                break;
+            case "teleportingbombs":
+                this.special = new TeleportingBombsMinesweeper();
+                this.special.init(size, mines);
+                break;
         }
     }
 
     generateBoard() {
-        if(this.special) return this.special.generateBoard();
+        if (this.special) return this.special.generateBoard();
         console.log('generating board with size: ' + this.size);
         let board = [];
         for (let i = 0; i < this.size; i++) {
@@ -60,7 +64,7 @@ export class Minesweeper {
     }
 
     randomizeMines() {
-        if(this.special) return this.special.randomizeMines();
+        if (this.special) return this.special.randomizeMines();
         let mineBoard = [];
         let mines = this.mines;
         for (let i = 0; i < this.size; i++) {
@@ -82,21 +86,22 @@ export class Minesweeper {
     }
 
     render() {
-        if(this.special) return this.special.render();
+        if (this.special) return this.special.render();
         updateGrid(this.board)
     }
 
     userClick(x, y, flag = false) {
-        if(this.special) return this.special.userClick(x, y, flag);
-        if(this.gameLocked) return;
+        if (this.special) return this.special.userClick(x, y, flag);
+        if (this.gameLocked) return;
         console.log('user clicked', x, y, flag);
         this.click(x, y, flag);
         this.clicksMade++;
+        this.render();
     }
 
     click(x, y, flag = false) {
-        if(this.special) return this.special.click(x, y, flag);
-        if(x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.gameLocked) return
+        if (this.special) return this.special.click(x, y, flag);
+        if (x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.gameLocked) return
         console.log('clicking', x, y, flag);
         if (this.board[y][x] === -3) {
             this.board[y][x] = -1;
@@ -106,7 +111,7 @@ export class Minesweeper {
             }
         } else {
             if (this.mineBoard[y][x]) {
-                if(this.clicksMade === 0) {
+                if (this.clicksMade === 0) {
                     console.log('mine on first click, moving mine');
                     this.mineBoard = this.randomizeMines();
                     this.click(x, y);
@@ -120,23 +125,20 @@ export class Minesweeper {
                 const bombs = this.getFieldNumber(x, y);
                 if (bombs === 0) {
                     this.board[y][x] = -4;
-                    setTimeout(() => {
-                        this.click(x - 1, y);
-                        this.click(x + 1, y);
-                        this.click(x, y - 1);
-                        this.click(x, y + 1);
-                        this.click(x - 1, y - 1);
-                        this.click(x + 1, y + 1);
-                        this.click(x + 1, y - 1);
-                        this.click(x - 1, y + 1);
-                    }, 300);
+                    this.click(x - 1, y);
+                    this.click(x + 1, y);
+                    this.click(x, y - 1);
+                    this.click(x, y + 1);
+                    this.click(x - 1, y - 1);
+                    this.click(x + 1, y + 1);
+                    this.click(x + 1, y - 1);
+                    this.click(x - 1, y + 1);
                 } else {
                     this.board[y][x] = bombs;
                 }
             }
         }
-        this.render();
-        if(this.checkWin()) {
+        if (this.checkWin()) {
             console.log('wins');
             this.gameLocked = true;
             Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
@@ -144,7 +146,7 @@ export class Minesweeper {
     }
 
     getFieldNumber(x, y) {
-        if(this.special) return this.special.getFieldNumber(x, y);
+        if (this.special) return this.special.getFieldNumber(x, y);
         let count = 0;
         for (let i = -1; i <= 1; i++) {
             for (let j = -1; j <= 1; j++) {
@@ -159,12 +161,12 @@ export class Minesweeper {
     }
 
     get bombs() {
-        if(this.special) return this.special.bombs;
+        if (this.special) return this.special.bombs;
         return this.mines;
     }
 
     get flags() {
-        if(this.special) return this.special.flags;
+        if (this.special) return this.special.flags;
         let count = 0;
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
@@ -177,7 +179,7 @@ export class Minesweeper {
     }
 
     checkWin() {
-        if(this.special) return this.special.checkWin();
+        if (this.special) return this.special.checkWin();
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
                 if (this.board[j][i] === -1 && !this.mineBoard[j][i]) {
@@ -189,7 +191,7 @@ export class Minesweeper {
     }
 
     reveal() {
-        if(this.special) return this.special.reveal();
+        if (this.special) return this.special.reveal();
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
                 if (this.mineBoard[j][i]) {
@@ -202,7 +204,7 @@ export class Minesweeper {
         }
         this.render();
     }
-    
+
     /**
      * 
      * @param {(state: "win" | "lose") => void} callback 
@@ -220,8 +222,8 @@ class NoFlagMinesweeper extends Minesweeper {
     }
 
     userClick(x, y, flag = false) {
-        if(this.gameLocked) return;
-        if(flag) return;
+        if (this.gameLocked) return;
+        if (flag) return;
         console.log('user clicked', x, y, flag);
         this.click(x, y, flag);
         this.clicksMade++;
@@ -238,7 +240,7 @@ class NoNumbersMinesweeper extends Minesweeper {
 
 class ChunkyHandMineSweeper extends Minesweeper {
     userClick(x, y, flag = false) {
-        if(this.gameLocked) return;
+        if (this.gameLocked) return;
         console.log('user clicked', x, y, flag);
         this.click(x, y, flag);
         this.click(x + 1, y, flag);
@@ -253,15 +255,65 @@ class ChunkyHandMineSweeper extends Minesweeper {
 
 class GravitationMinesweeper extends Minesweeper {
     userClick(x, y, flag = false) {
-        if(this.gameLocked) return;
+        if (this.gameLocked) return;
         console.log('user clicked', x, y, flag);
-        while(y < this.size - 1 && this.board[y+1][x] === -1) {
+        while (y < this.size - 1 && this.board[y + 1][x] === -1) {
             console.log('falling', x, y);
             y++;
         }
         this.click(x, y, flag);
 
         this.clicksMade++;
+    }
+}
+
+
+class TeleportingBombsMinesweeper extends Minesweeper {
+    userClick(x, y, flag = false) {
+        if (this.gameLocked) return;
+        console.log('user clicked', x, y, flag);
+        this.click(x, y, flag);
+
+        this.clicksMade++;
+
+        const bombs = this.mineBoard.map((row, ind) => row.map((cell, i) => cell ? { y: ind, x: i } : undefined)).flat().filter(row => row);
+        
+        console.log('searching for teleporting bomb');
+        let trys = 0;
+        let rndBombIndex = Math.floor(Math.random() * bombs.length);
+        while (this.board[bombs[rndBombIndex].y][bombs[rndBombIndex].x] !== -1 && trys < 100) {
+            rndBombIndex = Math.floor(Math.random() * bombs.length);
+            trys++;
+        }
+
+        if (trys >= 100) return
+        console.log('teleporting bomb from', bombs[rndBombIndex].x, bombs[rndBombIndex].y);
+
+        trys = 0;
+        let freeCells = this.board.map((row, ind) => row.map((cell, i) => cell === -1 && !this.mineBoard[ind][i]? { y: ind, x: i } : undefined)).flat().filter(row => row);
+        let rndEmptyIndex = Math.floor(Math.random() * freeCells.length);
+        while (this.board[freeCells[rndEmptyIndex].y][freeCells[rndEmptyIndex].x] !== -1 && trys < 1000) {
+            rndEmptyIndex = Math.floor(Math.random() * freeCells.length);
+            trys++;
+        }
+
+        if (trys >= 1000) return
+        console.log('teleporting bomb to', freeCells[rndEmptyIndex].x, freeCells[rndEmptyIndex].y);
+        this.mineBoard[bombs[rndBombIndex].y][bombs[rndBombIndex].x] = false;
+        this.mineBoard[freeCells[rndEmptyIndex].y][freeCells[rndEmptyIndex].x] = true;
+        console.log(this.mineBoard);
+
+        const numsToUpdate = this.board.map((row, ind) => row.map((cell, i) => cell >= 0 || cell === -4 ? { y: ind, x: i } : undefined)).flat().filter(row => row);
+        console.log(numsToUpdate);
+
+        for (let num of numsToUpdate) {
+            const n = this.getFieldNumber(num.x, num.y);
+            this.board[num.y][num.x] = n ? n : -4;
+        }
+
+        console.log(this.mineBoard.flat().filter(cell => cell).length + ' bombs left');
+
+        this.render();
     }
 }
 
@@ -284,30 +336,30 @@ class BigBombMinesweeper extends Minesweeper {
             let y = Math.ceil(Math.random() * (this.size - 2));
             console.log('trying to place mine at', x, y);
             if (
-                mineBoard[x][y] === 0 && 
-                mineBoard[x-1][y] === 0 &&
-                mineBoard[x+1][y] === 0 &&
-                mineBoard[x][y-1] === 0 &&
-                mineBoard[x][y+1] === 0 &&
-                mineBoard[x-1][y-1] === 0 &&
-                mineBoard[x+1][y+1] === 0 &&
-                mineBoard[x+1][y-1] === 0 &&
-                mineBoard[x-1][y+1] === 0
+                mineBoard[x][y] === 0 &&
+                mineBoard[x - 1][y] === 0 &&
+                mineBoard[x + 1][y] === 0 &&
+                mineBoard[x][y - 1] === 0 &&
+                mineBoard[x][y + 1] === 0 &&
+                mineBoard[x - 1][y - 1] === 0 &&
+                mineBoard[x + 1][y + 1] === 0 &&
+                mineBoard[x + 1][y - 1] === 0 &&
+                mineBoard[x - 1][y + 1] === 0
 
             ) {
                 mineBoard[x][y] = mines;
-                mineBoard[x-1][y] = mines;
-                mineBoard[x+1][y] = mines;
-                mineBoard[x][y-1] = mines;
-                mineBoard[x][y+1] = mines;
-                mineBoard[x-1][y-1] = mines;
-                mineBoard[x+1][y+1] = mines;
-                mineBoard[x+1][y-1] = mines;
-                mineBoard[x-1][y+1] = mines;
+                mineBoard[x - 1][y] = mines;
+                mineBoard[x + 1][y] = mines;
+                mineBoard[x][y - 1] = mines;
+                mineBoard[x][y + 1] = mines;
+                mineBoard[x - 1][y - 1] = mines;
+                mineBoard[x + 1][y + 1] = mines;
+                mineBoard[x + 1][y - 1] = mines;
+                mineBoard[x - 1][y + 1] = mines;
                 unnsuccessful = 0;
                 console.log('placed mine at', x, y);
                 mines--;
-            } else unnsuccessful++; 
+            } else unnsuccessful++;
         }
         console.log('mines placed', this.mines - mines);
         return mineBoard
@@ -318,37 +370,37 @@ class BigBombMinesweeper extends Minesweeper {
     }
 
     click(x, y, flag = false) {
-        if(x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.gameLocked) return
+        if (x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.gameLocked) return
         console.log('clicking', x, y, flag);
         if (this.board[y][x] <= -10) {
             const removeNumber = this.board[y][x];
             this.board = this.board.map(row => row.map(cell => cell === removeNumber ? -1 : cell));
         } else if (flag) {
             if (
-                this.board[y][x] === -1 && 
-                this.board[y-1][x] === -1 &&
-                this.board[y+1][x] === -1 &&
-                this.board[y][x-1] === -1 &&
-                this.board[y][x+1] === -1 &&
-                this.board[y-1][x-1] === -1 &&
-                this.board[y+1][x+1] === -1 &&
-                this.board[y+1][x-1] === -1 &&
-                this.board[y-1][x+1] === -1
+                this.board[y][x] === -1 &&
+                this.board[y - 1][x] === -1 &&
+                this.board[y + 1][x] === -1 &&
+                this.board[y][x - 1] === -1 &&
+                this.board[y][x + 1] === -1 &&
+                this.board[y - 1][x - 1] === -1 &&
+                this.board[y + 1][x + 1] === -1 &&
+                this.board[y + 1][x - 1] === -1 &&
+                this.board[y - 1][x + 1] === -1
             ) {
                 const flags = this.flags;
                 this.board[y][x] = -flags * 10 - 10
-                this.board[y-1][x] = -flags * 10 - 10
-                this.board[y+1][x] = -flags * 10 - 10
-                this.board[y][x-1] = -flags * 10 - 10
-                this.board[y][x+1] = -flags * 10 - 10
-                this.board[y-1][x-1] = -flags * 10 - 10
-                this.board[y+1][x+1] = -flags * 10 - 10
-                this.board[y+1][x-1] = -flags * 10 - 10
-                this.board[y-1][x+1] = -flags * 10 - 10
+                this.board[y - 1][x] = -flags * 10 - 10
+                this.board[y + 1][x] = -flags * 10 - 10
+                this.board[y][x - 1] = -flags * 10 - 10
+                this.board[y][x + 1] = -flags * 10 - 10
+                this.board[y - 1][x - 1] = -flags * 10 - 10
+                this.board[y + 1][x + 1] = -flags * 10 - 10
+                this.board[y + 1][x - 1] = -flags * 10 - 10
+                this.board[y - 1][x + 1] = -flags * 10 - 10
             }
         } else {
             if (this.mineBoard[y][x]) {
-                if(this.clicksMade === 0) {
+                if (this.clicksMade === 0) {
                     console.log('mine on first click, moving mine');
                     this.mineBoard = this.randomizeMines();
                     this.click(x, y);
@@ -378,7 +430,7 @@ class BigBombMinesweeper extends Minesweeper {
             }
         }
         this.render();
-        if(this.checkWin()) {
+        if (this.checkWin()) {
             console.log('wins');
             this.gameLocked = true;
             Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
