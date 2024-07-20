@@ -20,8 +20,8 @@ const games = {
     },
     "bigbombs": {
         type: "special",
-        width: 10,
-        bombs: 2
+        width: 30,
+        bombs: 30
     }
 }
 
@@ -37,6 +37,8 @@ const gameInfoBar = document.getElementById('game-info');
 const flagButton = document.getElementById('flag-toggler');
 const flagCounter = document.getElementById('flag-counter');
 
+let reavealTimeout = setTimeout(() => {}, 0);
+
 flagButton.addEventListener('click', () => {
     flagMode = !flagMode;
     flagButton.dataset.activated = flagMode;
@@ -48,6 +50,7 @@ resetButton.addEventListener('click', () => {
 });
 
 function reset(id) {
+    clearTimeout(reavealTimeout);
     selectedGame = id;
 
     while (gridElement.firstChild) {
@@ -95,11 +98,14 @@ for (let setting of settings) {
 
 minesweeper.render();
 
-minesweeper.onEnd((state) => {
+Minesweeper.onEnd((state) => {
     if(state === 'win') {
         gameInfoBar.innerText = 'You won!';
     } else {
         gameInfoBar.innerText = 'You lost!';
+        reavealTimeout = setTimeout(() => {
+            minesweeper.reveal();
+        }, 1500);
     }
 })
 
