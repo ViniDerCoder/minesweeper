@@ -44,7 +44,68 @@ body {
     .game-header {
         height: 5vw;
     }
-    
+}
+
+.reset-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: #54656bcb;
+    transition: color 0.2s;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.reset-button:hover {
+    cursor: pointer;
+    color: #54656b;
+}
+
+.flag-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.toggle-flag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: #54656bcb;
+    transition: color 0.2s;
+    margin-right: 1rem;
+    cursor: pointer;
+}
+
+.toggle-flag[data-activated="true"]::before {
+    content: "\f024";
+    font-weight: 900;
+    font-family: 'Font Awesome 5 Free';
+    color: #d32f2f;
+}
+
+.toggle-flag:hover[data-activated="true"]::before {
+    color: #d32f2fa8;
+}
+
+.toggle-flag[data-activated="false"]::before {
+    content: "\f024";
+    font-family: 'Font Awesome 5 Free';
+    color: #54656bcb;
+}
+
+.toggle-flag:hover[data-activated="false"]::before {
+    color: #54656b;
+}
+
+.remaining-flags {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: #54656bcb;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .game-board {
@@ -68,6 +129,7 @@ body {
     color: #54656bcb;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
+    font-family: "Font Awesome 5 Free";
 }
 
 .game-board > *[data-style="light"] {
