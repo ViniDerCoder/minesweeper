@@ -12,7 +12,8 @@
 <body>
     <div class="game">
         <div class="game-header">
-            <div class="reset-button">Reset</div>
+            <div id="reset-button" class="reset-button">Reset</div>
+            <div class="game-info" id="game-info">Minesweeper</div>
             <div class="flag-info">
                 <div id="flag-toggler" class="toggle-flag" data-activated="false"></div>
                 <div id="flag-counter" class="remaining-flags">?</div>
@@ -20,6 +21,21 @@
         </div>
         <div class="game-board" id="game-board-grid">
 
+        </div>
+    </div>
+    <div class="game-settings">
+        <div class="settings-title">Settings</div>
+        <div class="settings-row" id="normal">
+            <div class="settings-label">Normal</div>
+        </div>
+        <div class="settings-row" id="hard">
+            <div class="settings-label">Hard</div>
+        </div>
+        <div class="settings-row" id="impossible">
+            <div class="settings-label">Impossible</div>
+        </div>
+        <div class="settings-row" id="bigbombs">
+            <div class="settings-label">BigBombs</div>
         </div>
     </div>
 </body>
