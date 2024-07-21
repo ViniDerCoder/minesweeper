@@ -11,9 +11,10 @@ body {
     background-color: #f0f0f0;
 }
 
-@media screen and (orientation: landscape) and (min-width: 110vh) {
+@media screen and (orientation: landscape) and (min-width: 150vh) {
     body {
         flex-direction: row;
+        align-items: flex-start;
     }
 }
 
@@ -21,6 +22,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 2rem;
     height: 80vh;
     width: 75vh;
 }
@@ -285,7 +287,7 @@ body {
 
 
 
-.game-settings {
+.game-options {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -296,11 +298,37 @@ body {
     margin: 2rem;
 }
 
+.game-settings {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: row;
+    padding: 1rem;
+}
+
+.settings-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 1rem;
+}
+
 .settings-title {
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 1.5rem;
+    color: #54656bcb;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.settings-subtitle {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
     color: #54656bcb;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
@@ -328,4 +356,52 @@ body {
 .settings-row:hover {
     cursor: pointer;
     background-color: #54656b85;
+}
+
+.settings-custom {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.settings-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    color: #54656bcb;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    border: none;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+    margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+
+.settings-input:focus {
+    outline: none;
+}
+
+.settings-custom > select {
+    appearance: none;
+}
+
+.custom-settings-accept {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    color: #54656bcb;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    border: none;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.custom-settings-accept:hover {
+    cursor: pointer;
+    background-color: #54656b85;
+    color: #54656b;
 }

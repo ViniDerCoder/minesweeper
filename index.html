@@ -23,64 +23,25 @@
 
         </div>
     </div>
-    <div class="game-settings">
+    <div class="game-options" id="game-settings">
         <div class="settings-title">Settings</div>
-        <div class="settings-row" id="normal">
-            <div class="settings-label">Normal</div>
-        </div>
-        <div class="settings-row" id="hard">
-            <div class="settings-label">Hard</div>
-        </div>
-        <div class="settings-row" id="impossible">
-            <div class="settings-label">Impossible</div>
-        </div>
-        <div class="settings-row" id="bigbombs">
-            <div class="settings-label">BigBombs</div>
-        </div>
-        <div class="settings-row" id="bigbigbombs">
-            <div class="settings-label">Big-BigBombs</div>
-        </div>
-        <div class="settings-row" id="noflags">
-            <div class="settings-label">NoFlags</div>
-        </div>
-        <div class="settings-row" id="bignoflags">
-            <div class="settings-label">Big-NoFlags</div>
-        </div>
-        <div class="settings-row" id="nonumbers">
-            <div class="settings-label">NoNumbers</div>
-        </div>
-        <div class="settings-row" id="chunkyhand">
-            <div class="settings-label">ChunkyHand</div>
-        </div>
-        <div class="settings-row" id="gravitation">
-            <div class="settings-label">Gravity</div>
-        </div>
-        <div class="settings-row" id="biggravitation">
-            <div class="settings-label">Big-Gravity</div>
-        </div>
-        <div class="settings-row" id="teleport">
-            <div class="settings-label">TeleportingBombs</div>
-        </div>
-        <div class="settings-row" id="bigteleport">
-            <div class="settings-label">Big-TeleportingBombs</div>
-        </div>
-        <div class="settings-row" id="flashlight">
-            <div class="settings-label">Flashlight</div>
-        </div>
-        <div class="settings-row" id="bigflashlight">
-            <div class="settings-label">Big-Flashlight</div>
-        </div>  
-        <div class="settings-row" id="doublebombs">
-            <div class="settings-label">DoubleBombs</div>
-        </div> 
-        <div class="settings-row" id="bigdoublebombs">
-            <div class="settings-label">Big-DoubleBombs</div>
-        </div> 
-        <div class="settings-row" id="antimines">
-            <div class="settings-label">AntiMines</div>
-        </div>
-        <div class="settings-row" id="bigantimines">
-            <div class="settings-label">Big-AntiMines</div>
+        <div class="game-settings">
+            <div class="settings-section">
+                <div class="settings-subtitle">Custom</div>
+                <div class="settings-custom">
+                    <div class="settings-label">Size</div>
+                    <input type="number" id="width-input" class="settings-input" value="10" min="1">
+                    <div class="settings-label">Bombs</div>
+                    <input type="number" id="bomb-input" class="settings-input" value="10" min="1">
+                    <div class="settings-label">Gamemode</div>
+                    <select id="gamemode-select" class="settings-input">
+                    </select>
+                    <div id="custom-game-button" class="custom-settings-accept">Create</div>
+                </div>
+            </div>
+            <div class="settings-section" id="game-presets">
+                <div class="settings-subtitle">Presets</div>
+            </div>
         </div>
     </div>
 </body>

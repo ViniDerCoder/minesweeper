@@ -23,6 +23,9 @@ export class Minesweeper {
     }
 
     initSpecial(id, size, mines) {
+        this.size = size;
+        this.mines = mines;
+        
         switch (id) {
             case "bigbombs":
                 this.special = new BigBombMinesweeper();
