@@ -141,6 +141,18 @@ const games = {
         width: 30,
         bombs: 80
     },
+    "diggingdog": {
+        name: "Digging Dog",
+        type: "diggingdog",
+        width: 10,
+        bombs: 10
+    },
+    "bigdiggingdog": {
+        name: "Big Digging Dog",
+        type: "diggingdog",
+        width: 30,
+        bombs: 80
+    },
 }
 
 const gameSettings = document.getElementById('game-presets');

@@ -71,6 +71,10 @@ export class Minesweeper {
                 this.special = new FlagsCountMinesweeper();
                 this.special.init(size, mines);
                 break;
+            case "diggingdog":
+                this.special = new DiggingDogMineSweeper();
+                this.special.init(size, mines);
+                break;
         }
     }
 
@@ -713,6 +717,59 @@ class FlagsCountMinesweeper extends Minesweeper {
     }
 }
 
+
+class DiggingDogMineSweeper extends Minesweeper {
+    dogPos = { x: 0, y: 0 };
+    dogGoal = { x: 0, y: 0 };
+
+    moveTimeout = null;
+
+    userClick(x, y, flag = false) {
+        if (this.gameLocked) return;
+        console.log('user clicked', x, y, flag);
+        if(this.clicksMade === 0) {
+            this.dogPos = { x, y };
+            this.click(x, y, flag);
+            this.render();
+        }
+        this.dogGoal = { x, y };
+        this.moveDog(flag);
+        this.clicksMade++;
+    }
+
+    moveDog(flag) {
+        clearTimeout(this.moveTimeout);
+        const yMove = this.dogGoal.y - this.dogPos.y;
+        const xMove = this.dogGoal.x - this.dogPos.x;
+
+        if(yMove === 0 && xMove === 0) return;
+        if(yMove !== 0 && xMove === 0) {
+            this.dogPos.y += (yMove > 0 ? 1 : -1);
+        } else if(yMove === 0 && xMove !== 0) {
+            this.dogPos.x += (xMove > 0 ? 1 : -1);
+        } else {
+            Math.random() > 0.5 ? this.dogPos.y += (yMove > 0 ? 1 : -1) : this.dogPos.x += (xMove > 0 ? 1 : -1);
+        }
+
+        if(this.dogPos.x < 0) this.dogPos.x = this.size - 1;
+        if(this.dogPos.x >= this.size) this.dogPos.x = 0;
+        if(this.dogPos.y < 0) this.dogPos.y = this.size - 1;
+        if(this.dogPos.y >= this.size) this.dogPos.y = 0;
+
+        this.click(this.dogPos.x, this.dogPos.y, flag);
+
+        this.render();
+        this.moveTimeout = setTimeout(() => {
+            this.moveDog(flag);
+        }, 250);
+    }
+
+    render() {
+        if(!this.isRendering) return;
+        const newBoard = this.board.map((row, ind) => row.map((cell, i) => (this.dogPos.x === i && this.dogPos.y === ind) ? ((cell === -1 || cell === -3) ? -5.12 : (cell === -2 ? -5.13 : -5.11)) : cell));
+        updateGrid(newBoard)
+    }
+}
 
 class BigBombMinesweeper extends Minesweeper {
     randomizeMines() {
