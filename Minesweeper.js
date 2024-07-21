@@ -1,8 +1,8 @@
-import { updateGrid } from "./index.js";
+import { getHoveringField, updateGrid } from "./index.js";
 
 
 export class Minesweeper {
-    //-1 = grass, -2 = mine, -3 = flag, -4 = dirt, > 0 = dirt with n mines around
+    //-1 = grass, -2 = mine, -3 = flag, -4 = dirt, -5 = black, > 0 = dirt with n mines around
 
     gameLocked = false;
     clicksMade = 0;
@@ -44,6 +44,10 @@ export class Minesweeper {
                 break;
             case "teleportingbombs":
                 this.special = new TeleportingBombsMinesweeper();
+                this.special.init(size, mines);
+                break;
+            case "flashlight":
+                this.special = new FlashLightMinesweeper();
                 this.special.init(size, mines);
                 break;
         }
@@ -227,6 +231,7 @@ class NoFlagMinesweeper extends Minesweeper {
         console.log('user clicked', x, y, flag);
         this.click(x, y, flag);
         this.clicksMade++;
+        this.render();
     }
 }
 
@@ -249,6 +254,7 @@ class ChunkyHandMineSweeper extends Minesweeper {
         this.click(x, y - 1, flag);
 
         this.clicksMade++;
+        this.render();
     }
 }
 
@@ -264,6 +270,7 @@ class GravitationMinesweeper extends Minesweeper {
         this.click(x, y, flag);
 
         this.clicksMade++;
+        this.render();
     }
 }
 
@@ -277,7 +284,7 @@ class TeleportingBombsMinesweeper extends Minesweeper {
         this.clicksMade++;
 
         const bombs = this.mineBoard.map((row, ind) => row.map((cell, i) => cell ? { y: ind, x: i } : undefined)).flat().filter(row => row);
-        
+
         console.log('searching for teleporting bomb');
         let trys = 0;
         let rndBombIndex = Math.floor(Math.random() * bombs.length);
@@ -286,34 +293,50 @@ class TeleportingBombsMinesweeper extends Minesweeper {
             trys++;
         }
 
-        if (trys >= 100) return
+        if (trys >= 100) return this.render();
         console.log('teleporting bomb from', bombs[rndBombIndex].x, bombs[rndBombIndex].y);
 
         trys = 0;
         let freeCells = this.board.map((row, ind) => row.map((cell, i) => cell === -1 && !this.mineBoard[ind][i]? { y: ind, x: i } : undefined)).flat().filter(row => row);
+        if (freeCells.length === 0) return this.render();
         let rndEmptyIndex = Math.floor(Math.random() * freeCells.length);
         while (this.board[freeCells[rndEmptyIndex].y][freeCells[rndEmptyIndex].x] !== -1 && trys < 1000) {
             rndEmptyIndex = Math.floor(Math.random() * freeCells.length);
             trys++;
         }
 
-        if (trys >= 1000) return
+        if (trys >= 1000) return this.render();
         console.log('teleporting bomb to', freeCells[rndEmptyIndex].x, freeCells[rndEmptyIndex].y);
         this.mineBoard[bombs[rndBombIndex].y][bombs[rndBombIndex].x] = false;
         this.mineBoard[freeCells[rndEmptyIndex].y][freeCells[rndEmptyIndex].x] = true;
-        console.log(this.mineBoard);
+        
 
         const numsToUpdate = this.board.map((row, ind) => row.map((cell, i) => cell >= 0 || cell === -4 ? { y: ind, x: i } : undefined)).flat().filter(row => row);
-        console.log(numsToUpdate);
+        
 
         for (let num of numsToUpdate) {
             const n = this.getFieldNumber(num.x, num.y);
             this.board[num.y][num.x] = n ? n : -4;
         }
 
-        console.log(this.mineBoard.flat().filter(cell => cell).length + ' bombs left');
 
         this.render();
+    }
+}
+
+
+class FlashLightMinesweeper extends Minesweeper {
+    render() {
+        const hoveringField = getHoveringField();
+        const x = hoveringField % this.size;
+        const y = Math.floor(hoveringField / this.size);
+
+        const newBoard = this.board.map((row, ind) => row.map((cell, i) => ((x === i || x === i-1 || x === i+1) && (y === ind || y === ind-1 || y === ind+1)) ? cell : -5));
+
+        updateGrid(newBoard)
+        setTimeout(() => {
+            this.render();
+        },100)
     }
 }
 
@@ -407,29 +430,25 @@ class BigBombMinesweeper extends Minesweeper {
                 } else {
                     this.board[y][x] = -2;
                     this.gameLocked = true;
-                    this.render();
                     Minesweeper.endCallback ? Minesweeper.endCallback("lose") : null;
                 }
             } else {
                 const bombs = this.getFieldNumber(x, y);
                 if (bombs === 0) {
                     this.board[y][x] = -4;
-                    setTimeout(() => {
-                        this.click(x - 1, y);
-                        this.click(x + 1, y);
-                        this.click(x, y - 1);
-                        this.click(x, y + 1);
-                        this.click(x - 1, y - 1);
-                        this.click(x + 1, y + 1);
-                        this.click(x + 1, y - 1);
-                        this.click(x - 1, y + 1);
-                    }, 300);
+                    this.click(x - 1, y);
+                    this.click(x + 1, y);
+                    this.click(x, y - 1);
+                    this.click(x, y + 1);
+                    this.click(x - 1, y - 1);
+                    this.click(x + 1, y + 1);
+                    this.click(x + 1, y - 1);
+                    this.click(x - 1, y + 1);
                 } else {
                     this.board[y][x] = bombs;
                 }
             }
         }
-        this.render();
         if (this.checkWin()) {
             console.log('wins');
             this.gameLocked = true;

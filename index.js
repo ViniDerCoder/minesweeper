@@ -68,6 +68,11 @@ const games = {
         width: 30,
         bombs: 80
     },
+    "flashlight": {
+        type: "flashlight",
+        width: 10,
+        bombs: 10
+    },
 }
 
 
@@ -94,6 +99,22 @@ resetButton.addEventListener('click', () => {
     reset(selectedGame);
 });
 
+let mousePos = { x: 0, y: 0 };
+
+export function getMousePos() {
+    return { x: mousePos.x, y: mousePos.y };
+}
+
+document.addEventListener('mousemove', (e) => {
+    mousePos = { x: e.clientX, y: e.clientY };
+});
+
+let hoveringFieldIndex = null;
+
+export function getHoveringField() {
+    return hoveringFieldIndex;
+}
+
 function reset(id) {
     clearTimeout(reavealTimeout);
     selectedGame = id;
@@ -114,6 +135,14 @@ function reset(id) {
     
         gridItem.addEventListener('click', () => {
             minesweeper.userClick(i - Math.floor(i/games[id].width) * games[id].width, Math.floor(i/games[id].width), flagMode);
+        });
+
+        gridItem.addEventListener('mouseover', (e) => {
+            hoveringFieldIndex = i;
+        });
+
+        gridItem.addEventListener('touchstart', (e) => {
+            hoveringFieldIndex = i;
         });
     
         gridElement.appendChild(gridItem);
@@ -175,6 +204,11 @@ export function updateGrid(grid) {
                 delete gridItem.dataset.bomb;
                 delete gridItem.dataset.flag;
                 gridItem.innerText = '';
+            } else if(grid[row][cell] === -5) {
+                delete gridItem.dataset.bomb
+                delete gridItem.dataset.flag
+                gridItem.innerText ='';
+                gridItem.dataset.blacked = true;
             } else {
                 gridItem.dataset.bomb = false;
                 gridItem.dataset.flag = false;

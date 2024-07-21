@@ -216,6 +216,11 @@ body {
     font-family: "Font Awesome 5 Free";
 }
 
+.game-board > *[data-blacked="true"] {
+    background-color: #00000085;
+}
+
+
 
 .game-settings {
     display: flex;
