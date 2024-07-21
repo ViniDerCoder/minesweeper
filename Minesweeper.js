@@ -25,7 +25,7 @@ export class Minesweeper {
     initSpecial(id, size, mines) {
         this.size = size;
         this.mines = mines;
-        
+
         switch (id) {
             case "bigbombs":
                 this.special = new BigBombMinesweeper();
@@ -61,6 +61,14 @@ export class Minesweeper {
                 break;
             case "antimines":
                 this.special = new AntiMinesMineSweeper();
+                this.special.init(size, mines);
+                break;
+            case "connectededges":
+                this.special = new ConnectedEdgesMinesweeper();
+                this.special.init(size, mines);
+                break;
+            case "flagscount":
+                this.special = new FlagsCountMinesweeper();
                 this.special.init(size, mines);
                 break;
         }
@@ -604,6 +612,104 @@ class DoubleMinesMineSweeper extends Minesweeper {
             }
         }
         this.render();
+    }
+}
+
+
+class ConnectedEdgesMinesweeper extends Minesweeper {
+    getFieldNumber(x, y) {
+        let count = 0;
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                let xx = x + i;
+                let yy = y + j;
+                if (xx < 0) xx = this.size - 1;
+                if (xx >= this.size) xx = 0;
+                if (yy < 0) yy = this.size - 1;
+                if (yy >= this.size) yy = 0;
+
+                if (this.mineBoard[yy][xx]) {
+                    count++;
+                }
+                
+            }
+        }
+        return count;
+    }
+}
+
+
+class FlagsCountMinesweeper extends Minesweeper {
+    getFieldNumber(x, y) {
+        let count = 0;
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (x + i >= 0 && x + i < this.size && y + j >= 0 && y + j < this.size) {
+                    if (this.mineBoard[y + j][x + i]) {
+                        count++;
+                    }
+                    if (this.board[y + j][x + i] === -3) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    click(x, y, flag = false) {
+        if (x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.gameLocked) return
+        console.log('clicking', x, y, flag);
+        if (this.board[y][x] === -3) {
+            this.board[y][x] = -1;
+            this.updateNumbersAround(x, y);
+        } else if (flag) {
+            if (this.board[y][x] === -1) {
+                this.board[y][x] = -3;
+                this.updateNumbersAround(x, y);
+            }
+        } else {
+            if (this.mineBoard[y][x]) {
+                if (this.clicksMade === 0) {
+                    console.log('mine on first click, moving mine');
+                    this.mineBoard = this.randomizeMines();
+                    this.click(x, y);
+                } else {
+                    this.board[y][x] = -2;
+                    this.gameLocked = true;
+                    this.render();
+                    Minesweeper.endCallback ? Minesweeper.endCallback("lose") : null;
+                }
+            } else {
+                const bombs = this.getFieldNumber(x, y);
+                if (bombs === 0) {
+                    this.board[y][x] = -4;
+                    this.click(x - 1, y);
+                    this.click(x + 1, y);
+                    this.click(x, y - 1);
+                    this.click(x, y + 1);
+                    this.click(x - 1, y - 1);
+                    this.click(x + 1, y + 1);
+                    this.click(x + 1, y - 1);
+                    this.click(x - 1, y + 1);
+                } else {
+                    this.board[y][x] = bombs;
+                }
+            }
+        }
+        if (this.checkWin()) {
+            console.log('wins');
+            this.gameLocked = true;
+            Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
+        }
+    }
+
+    updateNumbersAround(x, y) {
+        const nums = this.board.map((row, ind) => row.map((cell, i) => cell >= 0 || cell === -4 ? { y: ind, x: i } : undefined)).flat().filter(row => row);
+        nums.filter(num => Math.abs(num.x - x) <= 1 && Math.abs(num.y - y) <= 1).forEach(num => {
+            const n = this.getFieldNumber(num.x, num.y);
+            this.board[num.y][num.x] = n ? n : -4;
+        });
     }
 }
 

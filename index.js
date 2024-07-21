@@ -117,6 +117,30 @@ const games = {
         width: 30,
         bombs: 80
     },
+    "connectededges": {
+        name: "Connected Edges",
+        type: "connectededges",
+        width: 10,
+        bombs: 15
+    },
+    "bigconnectededges": {
+        name: "Big Connected Edges",
+        type: "connectededges",
+        width: 30,
+        bombs: 100
+    },
+    "flagscount": {
+        name: "Flags Count",
+        type: "flagscount",
+        width: 10,
+        bombs: 10
+    },
+    "bigflagscount": {
+        name: "Big Flags Count",
+        type: "flagscount",
+        width: 30,
+        bombs: 80
+    },
 }
 
 const gameSettings = document.getElementById('game-presets');
@@ -166,6 +190,13 @@ let reavealTimeout = setTimeout(() => {}, 0);
 flagButton.addEventListener('click', () => {
     flagMode = !flagMode;
     flagButton.dataset.activated = flagMode;
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+        flagMode = !flagMode;
+        flagButton.dataset.activated = flagMode;
+    }
 });
 
 const resetButton = document.getElementById('reset-button');

@@ -296,6 +296,7 @@ body {
     border-radius: 1rem;
     padding: 1rem;
     margin: 2rem;
+    margin-bottom: 0;
 }
 
 .game-settings {
@@ -312,6 +313,7 @@ body {
     align-items: center;
     flex-direction: column;
     padding: 1rem;
+    padding-bottom: 0;
 }
 
 .settings-title {
@@ -337,6 +339,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 0.9rem;
     padding: 0.5rem;
     width: 100%;
     border-bottom: #54656bcb 0.1rem solid;
@@ -348,7 +351,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1rem;
     color: #54656b;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
