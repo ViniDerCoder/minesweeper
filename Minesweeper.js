@@ -56,6 +56,10 @@ export class Minesweeper {
                 this.special = new DoubleMinesMineSweeper();
                 this.special.init(size, mines);
                 break;
+            case "antimines":
+                this.special = new AntiMinesMineSweeper();
+                this.special.init(size, mines);
+                break;
         }
     }
 
@@ -359,6 +363,129 @@ class FlashLightMinesweeper extends Minesweeper {
 }
 
 
+class AntiMinesMineSweeper extends Minesweeper {
+    antimines = 0;
+    randomizeMines() {
+        console.log('randomizing anti mines');
+        let mineBoard = [];
+        let mines = this.mines;
+        for (let i = 0; i < this.size; i++) {
+            let row = [];
+            for (let j = 0; j < this.size; j++) {
+                row.push(0);
+            }
+            mineBoard.push(row);
+        }
+        while (mines > 0) {
+            let x = Math.floor(Math.random() * this.size);
+            let y = Math.floor(Math.random() * this.size);
+            if (!mineBoard[y][x]) {
+                mineBoard[y][x] = (Math.floor(Math.random() * 2) + 1 === 1) ? 1 : -1;
+                if(mineBoard[y][x] === -1) this.antimines++;
+                mines--;
+            }
+        }
+        return mineBoard
+    }
+
+    getFieldNumber(x, y) {
+        let count = undefined;
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (x + i >= 0 && x + i < this.size && y + j >= 0 && y + j < this.size) {
+                    if (this.mineBoard[y + j][x + i]) {
+                        if(!count) count = 0;
+                        count += this.mineBoard[y + j][x + i];
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    click(x, y, flag = false) {
+        if (x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.gameLocked) return
+        console.log('clicking', x, y, flag);
+        if ((this.board[y][x] === -3 && !flag) || this.board[y][x] === -3.2) {
+            this.board[y][x] = -1;
+        } else if (flag) {
+            if (this.board[y][x] === -1) {
+                this.board[y][x] = -3;
+            } else if (this.board[y][x] === -3) {
+                this.board[y][x] = -3.2;
+            }
+        } else {
+            if (this.mineBoard[y][x]) {
+                if (this.clicksMade === 0) {
+                    console.log('mine on first click, moving mine');
+                    this.mineBoard = this.randomizeMines();
+                    this.click(x, y);
+                } else {
+                    this.board[y][x] = this.mineBoard[y][x] === -1 ? -2.2 : -2;
+                    this.gameLocked = true;
+                    this.render();
+                    Minesweeper.endCallback ? Minesweeper.endCallback("lose") : null;
+                }
+            } else {
+                const bombs = this.getFieldNumber(x, y);
+                if (bombs === undefined) {
+                    this.board[y][x] = -4;
+                    this.click(x - 1, y);
+                    this.click(x + 1, y);
+                    this.click(x, y - 1);
+                    this.click(x, y + 1);
+                    this.click(x - 1, y - 1);
+                    this.click(x + 1, y + 1);
+                    this.click(x + 1, y - 1);
+                    this.click(x - 1, y + 1);
+                } else {
+                    if(bombs < 0) this.board[y][x] = (-bombs) + 100;
+                    else this.board[y][x] = bombs;
+                }
+            }
+        }
+        if (this.checkWin()) {
+            console.log('wins');
+            this.gameLocked = true;
+            Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
+        }
+    }
+
+    reveal() {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.mineBoard[j][i]) {
+                    this.board[j][i] = this.mineBoard[j][i] === -1 ? -2.2 : -2;
+                } else {
+                    const num = this.getFieldNumber(i, j);
+                    if(num < 0) this.board[j][i] = (-num) + 100;
+                    else this.board[j][i] = ((num !== undefined) ? num : -4);
+                }
+            }
+        }
+        this.render();
+    }
+
+    get flags() {
+        let count = 0;
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.board[j][i] === -3) {
+                    count++;
+                } else if (this.board[j][i] === -3.2) {
+                    count--;
+                }
+            }
+        }
+        return count;
+    }
+
+    get bombs() {
+        return this.mines - this.antimines;
+    }
+}
+
+
 class DoubleMinesMineSweeper extends Minesweeper {
     randomizeMines() {
         console.log('randomizing double mines');
@@ -418,7 +545,7 @@ class DoubleMinesMineSweeper extends Minesweeper {
                     this.mineBoard = this.randomizeMines();
                     this.click(x, y);
                 } else {
-                    this.board[y][x] = this.mineBoard === 1 ? -2 : -2.1;
+                    this.board[y][x] = this.mineBoard[y][x] === 1 ? -2 : -2.1;
                     this.gameLocked = true;
                     this.render();
                     Minesweeper.endCallback ? Minesweeper.endCallback("lose") : null;

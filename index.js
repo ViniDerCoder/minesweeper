@@ -83,6 +83,21 @@ const games = {
         width: 16,
         bombs: 40
     },
+    "bigdoublebombs": {
+        type: "doublemines",
+        width: 30,
+        bombs: 100
+    },
+    "antimines": {
+        type: "antimines",
+        width: 10,
+        bombs: 10
+    },
+    "bigantimines": {
+        type: "antimines",
+        width: 30,
+        bombs: 80
+    },
 }
 
 
@@ -204,32 +219,13 @@ export function updateGrid(grid) {
             if(!gridItem) {
                 continue;
             }
-            delete gridItem.dataset.blacked;
-            delete gridItem.dataset.bomb;
-            delete gridItem.dataset.bombs;
-            delete gridItem.dataset.flag;
-            delete gridItem.dataset.flags;
 
-            if(grid[row][cell] === -3) {
-                gridItem.dataset.flag = true;
-            } else if(grid[row][cell] === -3.1) {
-                gridItem.dataset.flags = true;
-            } else if(grid[row][cell] === -4) {
-                gridItem.dataset.bomb = false;
-                gridItem.innerText = '';
-            } else if(grid[row][cell] === -2) {
-                gridItem.dataset.bomb = true;
-            } else if(grid[row][cell] === -2.1) {
-                gridItem.dataset.bombs = true;
-            } else if(grid[row][cell] === -1) {
-                gridItem.innerText = '';
-            } else if(grid[row][cell] === -5) {
-                gridItem.innerText ='';
-                gridItem.dataset.blacked = true;
-            } else {
-                gridItem.dataset.bomb = false;
-                gridItem.dataset.flag = false;
-                gridItem.innerText = grid[row][cell];
+            gridItem.dataset.type = grid[row][cell];
+            gridItem.innerText = '';
+
+            if(grid[row][cell] >= 0) {
+                gridItem.dataset.type = -4;
+                gridItem.innerText = grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell];
             }
         }
     }

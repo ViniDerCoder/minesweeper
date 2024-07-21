@@ -169,37 +169,36 @@ body {
     background-color: #7a995db6;
 }
 
-.game-board > *[data-style="light"][data-bomb="false"] {
-    cursor: not-allowed;
-    background-color: #e5c29f;
-}
-
-.game-board > *[data-style="dark"][data-bomb="false"] {
-    cursor: not-allowed;
-    background-color: #d7b899;
-}
-
-.game-board > *[data-style="light"][data-bombs="true"],
-.game-board > *[data-style="light"][data-bomb="true"] {
+.game-board > *[data-style="light"][data-type="-2.2"],
+.game-board > *[data-style="light"][data-type="-2.1"],
+.game-board > *[data-style="light"][data-type="-2"] {
     cursor: not-allowed;
     background-color: #d32f2f;
 }
 
-.game-board > *[data-style="dark"][data-bombs="true"],
-.game-board > *[data-style="dark"][data-bomb="true"] {
+.game-board > *[data-style="dark"][data-type="-2.2"],
+.game-board > *[data-style="dark"][data-type="-2.1"],
+.game-board > *[data-style="dark"][data-type="-2"] {
     cursor: not-allowed;
     background-color: #972121;
 }
 
-.game-board > *[data-bombs="true"]::before,
-.game-board > *[data-bomb="true"]::before {
+.game-board > *[data-type="-2.2"]::before {
+    color: #005472;
+    content: "\f1e2";
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+}
+
+.game-board > *[data-type="-2.1"]::before,
+.game-board > *[data-type="-2"]::before {
     color: #fff;
     content: "\f1e2";
     font-weight: 900;
     font-family: "Font Awesome 5 Free";
 }
 
-.game-board > *[data-bombs="true"]::after {
+.game-board > *[data-type="-2.1"]::after {
     color: #000000b0;
     content: "\f1e2";
     position: absolute;
@@ -208,33 +207,33 @@ body {
     font-family: "Font Awesome 5 Free";
 }
 
-.game-board > *[data-style="light"][data-bombs="true"]:hover, 
-.game-board > *[data-style="light"][data-bomb="true"]:hover {
+.game-board > *[data-style="light"][data-type="-2.1"]:hover, 
+.game-board > *[data-style="light"][data-type="-2"]:hover {
     background-color: #d32f2f;
 }
 
-.game-board > *[data-style="dark"][data-bombs="true"]:hover,
-.game-board > *[data-style="dark"][data-bomb="true"]:hover {
+.game-board > *[data-style="dark"][data-type="-2.1"]:hover,
+.game-board > *[data-style="dark"][data-type="-2"]:hover {
     background-color: #972121;
 }
 
-.game-board > *[data-flags="true"][data-style="dark"]:before,
-.game-board > *[data-flag="true"][data-style="dark"]:before {
+.game-board > *[data-style="dark"][data-type="-3.1"]:before,
+.game-board > *[data-style="dark"][data-type="-3"]:before {
     color: #d32f2f;
     content: "\f024";
     font-weight: 900;
     font-family: "Font Awesome 5 Free";
 }
 
-.game-board > *[data-flags="true"][data-style="light"]:before,
-.game-board > *[data-flag="true"][data-style="light"]:before {
+.game-board > *[data-style="light"][data-type="-3.1"]:before,
+.game-board > *[data-style="light"][data-type="-3"]:before {
     color: #972121;
     content: "\f024";
     font-weight: 900;
     font-family: "Font Awesome 5 Free";
 }
 
-.game-board > *[data-flags="true"][data-style="dark"]:after {
+.game-board > *[data-style="dark"][data-type="-3.1"]:after {
     color: #2f3ad38a;
     content: "\f024";
     font-weight: 900;
@@ -243,7 +242,7 @@ body {
     font-family: "Font Awesome 5 Free";
 }
 
-.game-board > *[data-flags="true"][data-style="light"]::after {
+.game-board > *[data-style="light"][data-type="-3.1"]::after {
     color: #4f58dd8a;
     content: "\f024";
     font-weight: 900;
@@ -252,11 +251,35 @@ body {
     font-family: "Font Awesome 5 Free";
 }
 
-.game-board > *[data-blacked="true"][data-style="light"] {
+.game-board > *[data-style="light"][data-type="-3.2"]:before {
+    color: #4f58dd;
+    content: "\f024";
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+}
+
+.game-board > *[data-style="dark"][data-type="-3.2"]:before {
+    color: #2f3ad3;
+    content: "\f024";
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+}
+
+.game-board > *[data-style="light"][data-type="-4"] {
+    cursor: not-allowed;
+    background-color: #e5c29f;
+}
+
+.game-board > *[data-style="dark"][data-type="-4"] {
+    cursor: not-allowed;
+    background-color: #d7b899;
+}
+
+.game-board > *[data-style="light"][data-type="-5"] {
     background-color: #00000085;
 }
 
-.game-board > *[data-blacked="true"][data-style="dark"] {
+.game-board > *[data-style="dark"][data-type="-5"] {
     background-color: #000000bb;
 }
 
