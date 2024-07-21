@@ -73,6 +73,16 @@ const games = {
         width: 10,
         bombs: 10
     },
+    "bigflashlight": {
+        type: "flashlight",
+        width: 30,
+        bombs: 80
+    },
+    "doublebombs": {
+        type: "doublemines",
+        width: 16,
+        bombs: 40
+    },
 }
 
 
@@ -148,6 +158,7 @@ function reset(id) {
         gridElement.appendChild(gridItem);
     }
 
+    minesweeper.stopRendering();
     if(games[id].type !== "normal") minesweeper.initSpecial(games[id].type, games[id].width, games[id].bombs);
     else minesweeper.init(games[id].width, games[id].bombs);
     minesweeper.render();
@@ -193,20 +204,26 @@ export function updateGrid(grid) {
             if(!gridItem) {
                 continue;
             }
+            delete gridItem.dataset.blacked;
+            delete gridItem.dataset.bomb;
+            delete gridItem.dataset.bombs;
+            delete gridItem.dataset.flag;
+            delete gridItem.dataset.flags;
+
             if(grid[row][cell] === -3) {
                 gridItem.dataset.flag = true;
+            } else if(grid[row][cell] === -3.1) {
+                gridItem.dataset.flags = true;
             } else if(grid[row][cell] === -4) {
                 gridItem.dataset.bomb = false;
                 gridItem.innerText = '';
             } else if(grid[row][cell] === -2) {
                 gridItem.dataset.bomb = true;
+            } else if(grid[row][cell] === -2.1) {
+                gridItem.dataset.bombs = true;
             } else if(grid[row][cell] === -1) {
-                delete gridItem.dataset.bomb;
-                delete gridItem.dataset.flag;
                 gridItem.innerText = '';
             } else if(grid[row][cell] === -5) {
-                delete gridItem.dataset.bomb
-                delete gridItem.dataset.flag
                 gridItem.innerText ='';
                 gridItem.dataset.blacked = true;
             } else {

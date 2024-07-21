@@ -6,9 +6,11 @@ export class Minesweeper {
 
     gameLocked = false;
     clicksMade = 0;
+    isRendering = true;
 
     init(size, mines) {
         this.special = null;
+        this.isRendering = true;
         this.gameLocked = true;
         this.clicksMade = 0;
         this.size = size;
@@ -48,6 +50,10 @@ export class Minesweeper {
                 break;
             case "flashlight":
                 this.special = new FlashLightMinesweeper();
+                this.special.init(size, mines);
+                break;
+            case "doublemines":
+                this.special = new DoubleMinesMineSweeper();
                 this.special.init(size, mines);
                 break;
         }
@@ -90,6 +96,7 @@ export class Minesweeper {
     }
 
     render() {
+        if(!this.isRendering) return;
         if (this.special) return this.special.render();
         updateGrid(this.board)
     }
@@ -207,6 +214,11 @@ export class Minesweeper {
             }
         }
         this.render();
+    }
+
+    stopRendering() {
+        if(this.special) this.special.stopRendering();
+        this.isRendering = false;
     }
 
     /**
@@ -327,16 +339,141 @@ class TeleportingBombsMinesweeper extends Minesweeper {
 
 class FlashLightMinesweeper extends Minesweeper {
     render() {
+        if(!this.isRendering) return;
         const hoveringField = getHoveringField();
         const x = hoveringField % this.size;
         const y = Math.floor(hoveringField / this.size);
 
-        const newBoard = this.board.map((row, ind) => row.map((cell, i) => ((x === i || x === i-1 || x === i+1) && (y === ind || y === ind-1 || y === ind+1)) ? cell : -5));
-
+        const newBoard = this.board
+        .map((row, ind) => 
+            row.map((cell, i) => 
+                (((x === i || x === i-1 || x === i+1) && (y === ind || y === ind-1 || y === ind+1)) || (x === i+2 && y === ind) || (x === i-2 && y === ind) || (x === i && y === ind+2) || (x === i && y === ind-2)) ? cell : -5
+            )
+        );
+        
         updateGrid(newBoard)
         setTimeout(() => {
             this.render();
-        },100)
+        }, 100)
+    }
+}
+
+
+class DoubleMinesMineSweeper extends Minesweeper {
+    randomizeMines() {
+        console.log('randomizing double mines');
+        let mineBoard = [];
+        let mines = this.mines;
+        for (let i = 0; i < this.size; i++) {
+            let row = [];
+            for (let j = 0; j < this.size; j++) {
+                row.push(0);
+            }
+            mineBoard.push(row);
+        }
+        while (mines > 0) {
+            let x = Math.floor(Math.random() * this.size);
+            let y = Math.floor(Math.random() * this.size);
+            if (!mineBoard[y][x]) {
+                let double = (Math.floor(Math.random() * 2) + 1) === 1;
+                if(mines === 1) double = false;
+
+                mineBoard[y][x] = double ? 2 : 1;
+                mines--;
+                double ? mines-- : null;
+            }
+        }
+        return mineBoard
+    }
+
+    getFieldNumber(x, y) {
+        let count = 0;
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (x + i >= 0 && x + i < this.size && y + j >= 0 && y + j < this.size) {
+                    if (this.mineBoard[y + j][x + i]) {
+                        count += this.mineBoard[y + j][x + i];
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    click(x, y, flag = false) {
+        if (x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.gameLocked) return
+        console.log('clicking', x, y, flag);
+        if ((this.board[y][x] === -3 && !flag) || this.board[y][x] === -3.1) {
+            this.board[y][x] = -1;
+        } else if (flag) {
+            if (this.board[y][x] === -1) {
+                this.board[y][x] = -3;
+            } else if (this.board[y][x] === -3) {
+                this.board[y][x] = -3.1;
+            }
+        } else {
+            if (this.mineBoard[y][x]) {
+                if (this.clicksMade === 0) {
+                    console.log('mine on first click, moving mine');
+                    this.mineBoard = this.randomizeMines();
+                    this.click(x, y);
+                } else {
+                    this.board[y][x] = this.mineBoard === 1 ? -2 : -2.1;
+                    this.gameLocked = true;
+                    this.render();
+                    Minesweeper.endCallback ? Minesweeper.endCallback("lose") : null;
+                }
+            } else {
+                const bombs = this.getFieldNumber(x, y);
+                if (bombs === 0) {
+                    this.board[y][x] = -4;
+                    this.click(x - 1, y);
+                    this.click(x + 1, y);
+                    this.click(x, y - 1);
+                    this.click(x, y + 1);
+                    this.click(x - 1, y - 1);
+                    this.click(x + 1, y + 1);
+                    this.click(x + 1, y - 1);
+                    this.click(x - 1, y + 1);
+                } else {
+                    this.board[y][x] = bombs;
+                }
+            }
+        }
+        if (this.checkWin()) {
+            console.log('wins');
+            this.gameLocked = true;
+            Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
+        }
+    }
+
+    get flags() {
+        if (this.special) return this.special.flags;
+        let count = 0;
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.board[j][i] === -3) {
+                    count++;
+                } else if (this.board[j][i] === -3.1) {
+                    count += 2;
+                }
+            }
+        }
+        return count;
+    }
+
+    reveal() {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.mineBoard[j][i]) {
+                    this.board[j][i] = this.mineBoard[j][i] === 1 ? -2 : -2.1;
+                } else {
+                    const num = this.getFieldNumber(i, j);
+                    this.board[j][i] = num ? num : -4;
+                }
+            }
+        }
+        this.render();
     }
 }
 
