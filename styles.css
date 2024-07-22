@@ -70,6 +70,23 @@ body {
     color: #54656b;
 }
 
+.game-streak {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    margin: 0.3rem;
+    color: rgb(255, 196, 0);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.game-streak > .streak-icon::before {
+    content: "\f0e7";
+    font-weight: 900;
+    margin-right: 0.3rem;
+    font-family: 'Font Awesome 5 Free';
+}
+
 .game-info {
     display: block;
     font-size: 1.5rem;
@@ -125,6 +142,7 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 1.5rem;
+    width: 2rem;
     color: #54656bcb;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     user-select: none;

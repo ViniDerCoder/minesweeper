@@ -202,9 +202,12 @@ const minesweeper = new Minesweeper();
 
 let selectedGame = 'normal';
 
+let currentStreak = 0;
+
 let flagMode = false;
 
 const gameInfoBar = document.getElementById('game-info');
+console.log(gameInfoBar);
 
 const flagButton = document.getElementById('flag-toggler');
 const flagCounter = document.getElementById('flag-counter');
@@ -218,6 +221,7 @@ flagButton.addEventListener('click', () => {
 
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
+        e.preventDefault();
         flagMode = !flagMode;
         flagButton.dataset.activated = flagMode;
     }
@@ -245,6 +249,9 @@ export function getHoveringField() {
 }
 
 function reset(id, { width, bombs, type } = games[id]) {
+    if(minesweeper.checkWin()) currentStreak++;
+    else currentStreak = 0;
+
     clearTimeout(reavealTimeout);
     selectedGame = id;
     console.log("Starting game: " + id + "(" + type + ")" + " with width: " + width + " and bombs: " + bombs);
@@ -287,7 +294,10 @@ function reset(id, { width, bombs, type } = games[id]) {
     else minesweeper.init(width, bombs);
     minesweeper.render();
 
-    gameInfoBar.innerText = 'Minesweeper (' + (games[id] ? games[id].name : "Custom") + ')';
+    const streakDiv = document.getElementById('streak-count');
+    streakDiv.innerText = currentStreak;
+
+    gameInfoBar.innerText = (games[id] ? games[id].name : "Custom") + '-Minesweeper';
     flagMode = false;
     flagButton.dataset.activated = false;
     flagCounter.innerText = minesweeper.bombs - minesweeper.flags;
@@ -318,8 +328,10 @@ minesweeper.render();
 
 Minesweeper.onEnd((state) => {
     if(state === 'win') {
+        console.log("wins");
         gameInfoBar.innerText = 'You won!';
     } else {
+        console.log("lost");
         gameInfoBar.innerText = 'You lost!';
         reavealTimeout = setTimeout(() => {
             minesweeper.reveal();

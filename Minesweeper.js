@@ -173,7 +173,6 @@ export class Minesweeper {
             }
         }
         if (this.checkWin()) {
-            console.log('wins');
             this.gameLocked = true;
             Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
         }
@@ -464,7 +463,6 @@ class AntiMinesMineSweeper extends Minesweeper {
             }
         }
         if (this.checkWin()) {
-            console.log('wins');
             this.gameLocked = true;
             Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
         }
@@ -587,7 +585,6 @@ class DoubleMinesMineSweeper extends Minesweeper {
             }
         }
         if (this.checkWin()) {
-            console.log('wins');
             this.gameLocked = true;
             Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
         }
@@ -706,7 +703,6 @@ class FlagsCountMinesweeper extends Minesweeper {
             }
         }
         if (this.checkWin()) {
-            console.log('wins');
             this.gameLocked = true;
             Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
         }
@@ -936,7 +932,6 @@ class BigBombMinesweeper extends Minesweeper {
             }
         }
         if (this.checkWin()) {
-            console.log('wins');
             this.gameLocked = true;
             Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
         }
