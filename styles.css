@@ -156,6 +156,7 @@ body {
 }
 
 .game-board > *[data-style="light"][data-type="-5.12"],
+.game-board > *[data-style="light"][data-type="-5.12"],
 .game-board > *[data-style="light"] {
     background-color: #aad383;
 }
@@ -164,6 +165,7 @@ body {
     background-color: #aad383b6;
 }
 
+.game-board > *[data-style="dark"][data-type="-6.12"],
 .game-board > *[data-style="dark"][data-type="-5.12"],
 .game-board > *[data-style="dark"] {
     background-color: #7a995d;
@@ -173,6 +175,7 @@ body {
     background-color: #7a995db6;
 }
 
+.game-board > *[data-style="lgiht"][data-type="-6.13"],
 .game-board > *[data-style="light"][data-type="-5.13"],
 .game-board > *[data-style="light"][data-type="-2.2"],
 .game-board > *[data-style="light"][data-type="-2.1"],
@@ -181,6 +184,7 @@ body {
     background-color: #d32f2f;
 }
 
+.game-board > *[data-style="dark"][data-type="-6.13"],
 .game-board > *[data-style="dark"][data-type="-5.13"],
 .game-board > *[data-style="dark"][data-type="-2.2"],
 .game-board > *[data-style="dark"][data-type="-2.1"],
@@ -271,12 +275,14 @@ body {
     font-family: "Font Awesome 5 Free";
 }
 
+.game-board > *[data-style="light"][data-type="-6.11"],
 .game-board > *[data-style="light"][data-type="-5.11"],
 .game-board > *[data-style="light"][data-type="-4"] {
     cursor: not-allowed;
     background-color: #e5c29f;
 }
 
+.game-board > *[data-style="dark"][data-type="-6.11"],
 .game-board > *[data-style="dark"][data-type="-5.11"],
 .game-board > *[data-style="dark"][data-type="-4"] {
     cursor: not-allowed;
@@ -298,6 +304,15 @@ body {
     font-weight: 900;
     font-family: "Font Awesome 5 Free";
     color: #863100c9;
+}
+
+.game-board > *[data-type="-6.13"]::before,
+.game-board > *[data-type="-6.12"]::before,
+.game-board > *[data-type="-6.11"]::before {
+    content: "\f6f0";
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+    color: #ececec;
 }
 
 
@@ -355,7 +370,7 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 0.9rem;
-    padding: 0.5rem;
+    padding: 0.3rem;
     width: 100%;
     border-bottom: #54656bcb 0.1rem solid;
     border-radius: 2rem;

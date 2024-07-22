@@ -153,6 +153,18 @@ const games = {
         width: 30,
         bombs: 80
     },
+    "walkinghorse": {
+        name: "Walking Horse",
+        type: "walkinghorse",
+        width: 10,
+        bombs: 10
+    },
+    "bigwalkinghorse": {
+        name: "Big Walking Horse",
+        type: "walkinghorse",
+        width: 30,
+        bombs: 80
+    },
 }
 
 const gameSettings = document.getElementById('game-presets');
@@ -262,6 +274,10 @@ function reset(id, { width, bombs, type } = games[id]) {
         gridItem.addEventListener('touchstart', (e) => {
             hoveringFieldIndex = i;
         });
+
+        gridItem.addEventListener('touchmove', (e) => {
+            hoveringFieldIndex = i;
+        })
     
         gridElement.appendChild(gridItem);
     }

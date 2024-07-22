@@ -75,6 +75,10 @@ export class Minesweeper {
                 this.special = new DiggingDogMineSweeper();
                 this.special.init(size, mines);
                 break;
+            case "walkinghorse":
+                this.special = new WalkingHorseMineSweeper();
+                this.special.init(size, mines);
+                break;
         }
     }
 
@@ -770,6 +774,58 @@ class DiggingDogMineSweeper extends Minesweeper {
         updateGrid(newBoard)
     }
 }
+
+
+class WalkingHorseMineSweeper extends Minesweeper {
+    horsePos = { x: 0, y: 0 };
+
+    moveTimeout = null;
+
+    userClick(x, y, flag = false) {
+        if (this.gameLocked) return;
+        console.log('user clicked', x, y, flag);
+        if(this.clicksMade === 0) {
+            this.horsePos = { x, y };
+            this.randomHorseStep();
+        }
+        this.click(x, y, flag);
+        this.render();
+        this.render();
+        this.clicksMade++;
+    }
+
+    lastPos = { x: -1, y: -1 };
+    randomHorseStep(skip = false) {
+        setTimeout(() => {
+            if(this.gameLocked) return;
+            const move = Math.floor(Math.random() * 2) === 1 ? 1 : -1;
+
+            const dir = Math.floor(Math.random() * 2);
+            dir === 1 ?  this.horsePos.x += move : this.horsePos.y += move;
+
+            if(this.horsePos.x === this.lastPos.x && this.horsePos.y === this.lastPos.y) {
+                dir === 1 ? this.horsePos.x -= move : this.horsePos.y -= move;
+                return this.randomHorseStep(true);
+            } else this.lastPos = { x: dir === 1 ? this.horsePos.x - move : this.horsePos.x, y: dir === 0 ? this.horsePos.y - move : this.horsePos.y };
+
+            if(this.horsePos.x < 0) this.horsePos.x = this.size - 1;
+            if(this.horsePos.x >= this.size) this.horsePos.x = 0;
+            if(this.horsePos.y < 0) this.horsePos.y = this.size - 1;
+            if(this.horsePos.y >= this.size) this.horsePos.y = 0;
+
+            this.click(this.horsePos.x, this.horsePos.y);
+            this.render()
+            this.randomHorseStep();
+        }, skip ? 0 : 650)
+    }
+
+    render() {
+        if(!this.isRendering) return;
+        const newBoard = this.board.map((row, ind) => row.map((cell, i) => (this.horsePos.x === i && this.horsePos.y === ind) ? ((cell === -1 || cell === -3) ? -6.12 : (cell === -2 ? -6.13 : -6.11)) : cell));
+        updateGrid(newBoard)
+    }
+}
+
 
 class BigBombMinesweeper extends Minesweeper {
     randomizeMines() {
