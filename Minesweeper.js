@@ -87,6 +87,10 @@ export class Minesweeper {
                 this.special = new TickingBombsMinesweeper();
                 this.special.init(size, mines);
                 break;
+            case "daynight":
+                this.special = new DayNightMinesweeper();
+                this.special.init(size, mines);
+                break;
         }
     }
 
@@ -143,7 +147,7 @@ export class Minesweeper {
 
     click(x, y, flag = false) {
         if (this.special) return this.special.click(x, y, flag);
-        if (x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.gameLocked) return
+        if (x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.board[y][x] > 0|| this.gameLocked) return false
         console.log('clicking', x, y, flag);
         if (this.board[y][x] === -3) {
             this.board[y][x] = -1;
@@ -1118,7 +1122,6 @@ class TickingBombsMinesweeper extends Minesweeper {
     getFieldNumber(x, y) {
         let count = 0;
         let lowestTimer = Infinity;
-        console.log(this.timers)
         for (let i = -1; i <= 1; i++) {
             for (let j = -1; j <= 1; j++) {
                 if (x + i >= 0 && x + i < this.size && y + j >= 0 && y + j < this.size) {
@@ -1137,9 +1140,9 @@ class TickingBombsMinesweeper extends Minesweeper {
         if (!this.isRendering) return;
 
         this.timers = this.timers.map(row => row.map(cell => cell === Infinity ? Infinity : cell - 1));
-        this.timers.filter(row => row.some(cell => cell <= 0)).forEach((row, ind) => {
+        this.timers.forEach((row, ind) => {
             row.forEach((cell, i) => {
-                if (cell <= 0 && cell !== -Infinity) {
+                if (cell <= 0 && cell > -Infinity) {
                     if(this.board[ind][i] !== -3) {
                         console.log('exploding', i, ind);
                         this.click(i, ind);
@@ -1170,5 +1173,32 @@ class TickingBombsMinesweeper extends Minesweeper {
         clearInterval(this.renderIntervall);
         this.renderIntervall = null;
         this.isRendering = false;
+    }
+}
+
+
+class DayNightMinesweeper extends Minesweeper {
+    day = true;
+
+    render() {
+        if (!this.isRendering) return;
+        updateGrid(this.board.map(row => row.map(cell => this.day ? cell : -5)))
+    }
+
+    userClick(x, y, flag = false) {
+        if (this.gameLocked) return;
+        console.log('user clicked', x, y, flag);
+        const clicked = this.click(x, y, flag);
+        this.clicksMade++;
+        this.render();
+        if (this.day) {
+            this.day = false;
+            setTimeout(() => {
+                this.render();
+            }, 500)
+        } else if(clicked !== false){
+            this.day = true;
+            this.render();
+        }
     }
 }

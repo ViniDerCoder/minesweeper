@@ -123,23 +123,11 @@ const games = {
         width: 10,
         bombs: 15
     },
-    "bigconnectededges": {
-        name: "Big Connected Edges",
-        type: "connectededges",
-        width: 30,
-        bombs: 100
-    },
     "flagscount": {
         name: "Flags Count",
         type: "flagscount",
         width: 10,
         bombs: 10
-    },
-    "bigflagscount": {
-        name: "Big Flags Count",
-        type: "flagscount",
-        width: 30,
-        bombs: 80
     },
     "diggingdog": {
         name: "Digging Dog",
@@ -174,6 +162,12 @@ const games = {
     "tickingbombs": {
         name: "Ticking Bombs",
         type: "tickingbombs",
+        width: 10,
+        bombs: 10
+    },
+    "daynight": {
+        name: "Day Night",
+        type: "daynight",
         width: 10,
         bombs: 10
     },
@@ -261,8 +255,7 @@ export function getHoveringField() {
 }
 
 function reset(id, { width, bombs, type } = games[id]) {
-    if(minesweeper.checkWin()) currentStreak++;
-    else currentStreak = 0;
+    if(!minesweeper.checkWin()) currentStreak = 0;
 
     clearTimeout(reavealTimeout);
     selectedGame = id;
@@ -342,9 +335,11 @@ minesweeper.render();
 Minesweeper.onEnd((state) => {
     if(state === 'win') {
         console.log("wins");
+        currentStreak++;
         gameInfoBar.innerText = 'You won!';
     } else {
         console.log("lost");
+        currentStreak = 0;
         gameInfoBar.innerText = 'You lost!';
         reavealTimeout = setTimeout(() => {
             minesweeper.reveal();
@@ -372,6 +367,7 @@ export function updateGrid(grid) {
                 if(grid[row][cell] >= 0) {
                     gridItem.dataset.type = -4;
                     gridItem.innerText = grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell];
+                    if(gridItem.innerText.length > 2) gridItem.style.fontSize = `${Math.floor(1000 / minesweeper.size) / 3}px`;
                 }
 
                 gridItem.dataset.rotation = 0;
