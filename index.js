@@ -171,6 +171,12 @@ const games = {
         width: 10,
         bombs: 10
     },
+    "tickingbombs": {
+        name: "Ticking Bombs",
+        type: "tickingbombs",
+        width: 10,
+        bombs: 10
+    },
 }
 
 const gameSettings = document.getElementById('game-presets');

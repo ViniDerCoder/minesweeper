@@ -83,6 +83,10 @@ export class Minesweeper {
                 this.special = new UnreavealingMinesweeper();
                 this.special.init(size, mines);
                 break;
+            case "tickingbombs":
+                this.special = new TickingBombsMinesweeper();
+                this.special.init(size, mines);
+                break;
         }
     }
 
@@ -1028,5 +1032,143 @@ class UnreavealingMinesweeper extends Minesweeper {
             this.gameLocked = true;
             Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
         }
+    }
+}
+
+
+class TickingBombsMinesweeper extends Minesweeper {
+    timers
+    renderIntervall = null;
+
+    init(size, mines) {
+        this.special = null;
+        this.isRendering = true;
+        this.gameLocked = true;
+        this.clicksMade = 0;
+        this.size = size;
+        this.mines = mines;
+        this.board = this.generateBoard();
+        this.mineBoard = this.randomizeMines();
+        this.timers = Array.from({ length: this.size }, () => Array.from({ length: this.size }, () => Infinity));
+        setTimeout(() => {
+            this.gameLocked = false;
+        }, 500);
+    }
+
+    click(x, y, flag = false) {
+        if (x < 0 || x >= this.size || y < 0 || y >= this.size || this.board[y][x] === -4 || this.gameLocked) return
+        console.log('clicking', x, y, flag);
+        if (this.board[y][x] === -3) {
+            this.board[y][x] = -1;
+            this.timers[y][x] = 30;
+        } else if (flag) {
+            if (this.board[y][x] === -1) {
+                this.board[y][x] = -3;
+            }
+        } else {
+            if (this.mineBoard[y][x]) {
+                if (this.clicksMade === 0) {
+                    console.log('mine on first click, moving mine');
+                    this.mineBoard = this.randomizeMines();
+                    this.click(x, y);
+                } else {
+                    this.board[y][x] = -2;
+                    this.gameLocked = true;
+                    this.render();
+                    Minesweeper.endCallback ? Minesweeper.endCallback("lose") : null;
+                }
+            } else {
+                const bombs = this.getFieldNumber(x, y);
+                if (bombs === 0) {
+                    this.board[y][x] = -4;
+                    this.click(x - 1, y);
+                    this.click(x + 1, y);
+                    this.click(x, y - 1);
+                    this.click(x, y + 1);
+                    this.click(x - 1, y - 1);
+                    this.click(x + 1, y + 1);
+                    this.click(x + 1, y - 1);
+                    this.click(x - 1, y + 1);
+                } else {
+                    this.board[y][x] = bombs;
+                }
+            }
+        }
+        if (this.checkWin()) {
+            this.gameLocked = true;
+            Minesweeper.endCallback ? Minesweeper.endCallback("win") : null;
+        }
+    }
+
+    reveal() {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.mineBoard[j][i]) {
+                    this.board[j][i] = -2 
+                } else {
+                    clearInterval(this.renderIntervall);
+                    const num = this.getFieldNumber(i, j);
+                    this.board[j][i] = num ? num : -4;
+                }
+            }
+        }
+        this.render(true);
+    }
+
+    getFieldNumber(x, y) {
+        let count = 0;
+        let lowestTimer = Infinity;
+        console.log(this.timers)
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (x + i >= 0 && x + i < this.size && y + j >= 0 && y + j < this.size) {
+                    if (this.mineBoard[y + j][x + i]) {
+                        count++;
+                        if (this.timers[y + j][x + i] === Infinity) this.timers[y + j][x + i] = 30;
+                        if (this.timers[y + j][x + i] < lowestTimer && this.timers[y+j][x+i] !== -Infinity) lowestTimer = this.timers[y + j][x + i];
+                    }
+                }
+            }
+        }
+        return count + (lowestTimer === Infinity ? 0 : (Math.floor(Math.min(0.9, lowestTimer / 30) * 10) / 10));
+    }
+
+    render(withoutTimer = false) {
+        if (!this.isRendering) return;
+
+        this.timers = this.timers.map(row => row.map(cell => cell === Infinity ? Infinity : cell - 1));
+        this.timers.filter(row => row.some(cell => cell <= 0)).forEach((row, ind) => {
+            row.forEach((cell, i) => {
+                if (cell <= 0 && cell !== -Infinity) {
+                    if(this.board[ind][i] !== -3) {
+                        console.log('exploding', i, ind);
+                        this.click(i, ind);
+                        clearInterval(this.renderIntervall);
+                    }
+                    this.timers[ind][i] = -Infinity;
+                }
+            })
+        });
+        this.updateNums()
+        if(withoutTimer) this.board = this.board.map(row => row.map(cell => cell > 0 ? Math.floor(cell) : cell));
+        updateGrid(this.board);
+        if(!this.renderIntervall) this.renderIntervall = setInterval(() => {
+            this.render();
+        }, 1000)
+        
+    }
+
+    updateNums() {
+        const nums = this.board.map((row, ind) => row.map((cell, i) => cell >= 0 ? { y: ind, x: i } : undefined)).flat().filter(row => row);
+        nums.forEach(num => {
+            const n = this.getFieldNumber(num.x, num.y);
+            this.board[num.y][num.x] = n ? n : -4;
+        });
+    }
+
+    stopRendering() {
+        clearInterval(this.renderIntervall);
+        this.renderIntervall = null;
+        this.isRendering = false;
     }
 }
