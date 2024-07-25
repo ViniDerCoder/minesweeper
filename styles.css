@@ -168,9 +168,21 @@ body {
     overflow: hidden;
     color: #54656bcb;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s, transform 0.1s linear;
     font-family: "Font Awesome 5 Free";
     user-select: none;
+}
+
+.game-board > *[data-rotation="180"] {
+    transform: rotate3d(0, 1, 0, 180deg);
+}
+
+.game-board > *[data-rotation="90"] {
+    transform: rotate3d(0, 1, 0, 90deg);
+}
+
+.game-board > *[data-rotation="270"] {
+    transform: rotate3d(0, 1, 0, 270deg);
 }
 
 .game-board > *[data-style="light"][data-type="-5.12"],
@@ -193,7 +205,7 @@ body {
     background-color: #7a995db6;
 }
 
-.game-board > *[data-style="lgiht"][data-type="-6.13"],
+.game-board > *[data-style="light"][data-type="-6.13"],
 .game-board > *[data-style="light"][data-type="-5.13"],
 .game-board > *[data-style="light"][data-type="-2.2"],
 .game-board > *[data-style="light"][data-type="-2.1"],

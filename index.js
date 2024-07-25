@@ -268,6 +268,7 @@ function reset(id, { width, bombs, type } = games[id]) {
         gridItem.classList.add('grid-item');
         gridItem.id = 'grid-item.' + i;
         gridItem.dataset.style = (i + Math.floor(i/width)) % 2 === 0 ? 'light' : 'dark';
+        gridItem.dataset.type = -1;
         gridElement.style.fontSize = `${Math.floor(1000 / width) / 2}px`;
     
         gridItem.addEventListener('click', () => {
@@ -350,13 +351,19 @@ export function updateGrid(grid) {
                 continue;
             }
 
-            gridItem.dataset.type = grid[row][cell];
-            gridItem.innerText = '';
+            if(gridItem.dataset.type == (grid[row][cell] >= 0 ? (gridItem.innerText == (grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell]) ? -4 : 0) : grid[row][cell])) continue;
+            if(grid.length <= 30 && grid[row][cell] !== -3) gridItem.dataset.rotation = 90;
+            setTimeout(() => {
+                gridItem.dataset.type = grid[row][cell];
+                gridItem.innerText = '';
 
-            if(grid[row][cell] >= 0) {
-                gridItem.dataset.type = -4;
-                gridItem.innerText = grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell];
-            }
+                if(grid[row][cell] >= 0) {
+                    gridItem.dataset.type = -4;
+                    gridItem.innerText = grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell];
+                }
+
+                gridItem.dataset.rotation = 0;
+            }, 100);
         }
     }
     flagCounter.innerText = minesweeper.bombs - minesweeper.flags;
