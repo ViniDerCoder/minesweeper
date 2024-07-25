@@ -165,6 +165,12 @@ const games = {
         width: 30,
         bombs: 80
     },
+    "unreaveal": {
+        name: "Unreaveal",
+        type: "unreavealing",
+        width: 10,
+        bombs: 10
+    },
 }
 
 const gameSettings = document.getElementById('game-presets');
