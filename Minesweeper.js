@@ -91,6 +91,10 @@ export class Minesweeper {
                 this.special = new DayNightMinesweeper();
                 this.special.init(size, mines);
                 break;
+            case "math":
+                this.special = new MathMinesweeper();
+                this.special.init(size, mines);
+                break;
         }
     }
 
@@ -1200,5 +1204,82 @@ class DayNightMinesweeper extends Minesweeper {
             this.day = true;
             this.render();
         }
+    }
+}
+
+
+class MathMinesweeper extends Minesweeper {
+    render() {
+        if (!this.isRendering) return;
+        updateGrid(this.board.map((row, ind) => row.map((cell, i) => {
+            if(cell <= 0) return cell
+            const tsk = this.getMathTaskFor(cell, ind, i)
+            return {
+                style: -4, 
+                text: tsk[0],
+                length: tsk[1] ? tsk[1] : undefined
+            }
+        })))
+    }
+
+    tasks = {}
+    getMathTaskFor(num, y, x) {
+        if(this.tasks[`${x}-${y}`]) return this.tasks[`${x}-${y}`];
+
+        const task = (() => { 
+            switch(num) {
+                default:
+                case 0: return '';
+                case 1: return this.randomOf(
+                    ['\\(\\sqrt{1}\\)'], 
+                    ['\\(1^2\\)'],
+                    ['\\(1^4\\)'],
+                    ['\\(1^1\\)'],
+                    ['\\(3^0\\)'],
+                )
+                case 2: return this.randomOf(
+                    ['\\(\\frac{8}{4}\\)', 3],
+                    ['\\(\\sqrt[3]{8}\\)', 3],
+                    ['\\(\\sqrt{4}\\)', 3]
+                )
+                case 3: return this.randomOf(
+                    ['\\(\\frac{45}{15}\\)', 3],
+                    ['\\(\\sqrt{9}\\)', 3]
+                )
+                case 4: return this.randomOf(
+                    ['\\(\\frac{12}{3}\\)', 3],
+                    ['\\(4^1\\)', 3],
+                    ['\\(\\sqrt{16}\\)', 3],
+                    ['\\(2+1*2\\)', 8]
+                )
+                case 5: return this.randomOf(
+                    ['\\(\\frac{30}{6}\\)', 3],
+                    ['\\(5^1\\)', 3],
+                    ['\\(\\sqrt{25}\\)', 3]
+                )
+                case 6: return this.randomOf(
+                    ['\\(\\frac{36}{6}\\)', 3],
+                    ['\\(6^1\\)', 3],
+                    ['\\(\\sqrt{36}\\)', 3],
+                    ['\\3!\\)', 8]
+                )
+                case 7: return this.randomOf(
+                    ['\\(\\frac{56}{8}\\)', 3],
+                    ['\\(\\sqrt{49}\\)', 3],
+                    ['\\(1+2*3\\)', 8]
+                )
+                case 8: return this.randomOf(
+                    ['\\(\\frac{72}{9}\\)', 3],
+                    ['\\(2*4\\)', 5],
+                    ['\\(\\sqrt{64}\\)', 3]
+                )
+            }
+        })()
+        this.tasks[`${x}-${y}`] = task;
+        return task;
+    }
+
+    randomOf(...values) {
+        return values[Math.floor(Math.random() * values.length)];
     }
 }

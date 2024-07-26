@@ -171,6 +171,12 @@ const games = {
         width: 10,
         bombs: 10
     },
+    "math": {
+        name: "Math",
+        type: "math",
+        width: 10,
+        bombs: 10
+    },
 }
 
 const gameSettings = document.getElementById('game-presets');
@@ -358,21 +364,38 @@ export function updateGrid(grid) {
                 continue;
             }
 
-            if(gridItem.dataset.type == (grid[row][cell] >= 0 ? (gridItem.innerText == (grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell]) ? -4 : 0) : grid[row][cell])) continue;
-            if(grid.length <= 30 && grid[row][cell] !== -3) gridItem.dataset.rotation = 90;
-            setTimeout(() => {
-                gridItem.dataset.type = grid[row][cell];
-                gridItem.innerText = '';
-
-                if(grid[row][cell] >= 0) {
-                    gridItem.dataset.type = -4;
-                    gridItem.innerText = grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell];
-                    if(gridItem.innerText.length > 2) gridItem.style.fontSize = `${Math.floor(1000 / minesweeper.size) / 3}px`;
-                }
-
-                gridItem.dataset.rotation = 0;
-            }, 100);
+            if(typeof grid[row][cell] === 'object') {
+                if(gridItem.dataset.type == grid[row][cell].style && gridItem.dataset.value == grid[row][cell].text) continue;
+                if(grid.length <= 30 && grid[row][cell].style !== -3) gridItem.dataset.rotation = 90;
+                setTimeout(() => {
+                    gridItem.dataset.type = grid[row][cell].style;
+                    gridItem.innerText = grid[row][cell].text;
+                    gridItem.dataset.value = grid[row][cell].text;
+                    if(grid[row][cell].length) {
+                        gridItem.style.fontSize = `${Math.floor(1000 / minesweeper.size) / grid[row][cell].length}px`;
+                    }
+                    else if(gridItem.dataset.value.length > 2) gridItem.style.fontSize = `${Math.floor(1000 / minesweeper.size) / 3}px`;
+    
+                    gridItem.dataset.rotation = 0;
+                }, 100);
+            } else {
+                if(gridItem.dataset.type == (grid[row][cell] >= 0 ? (gridItem.innerText == (grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell]) ? -4 : 0) : grid[row][cell])) continue;
+                if(grid.length <= 30 && grid[row][cell] !== -3) gridItem.dataset.rotation = 90;
+                setTimeout(() => {
+                    gridItem.dataset.type = grid[row][cell];
+                    gridItem.innerText = '';
+    
+                    if(grid[row][cell] >= 0) {
+                        gridItem.dataset.type = -4;
+                        gridItem.innerText = grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell];
+                        if(gridItem.dataset.value.length > 2) gridItem.style.fontSize = `${Math.floor(1000 / minesweeper.size) / 3}px`;
+                    }
+    
+                    gridItem.dataset.rotation = 0;
+                }, 100);
+            }
         }
     }
+    setTimeout(() => MathJax.typeset(), 120 );
     flagCounter.innerText = minesweeper.bombs - minesweeper.flags;
 }
