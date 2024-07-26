@@ -388,7 +388,7 @@ export function updateGrid(grid) {
                     if(grid[row][cell] >= 0) {
                         gridItem.dataset.type = -4;
                         gridItem.innerText = grid[row][cell] > 100 ? -(grid[row][cell] - 100) : grid[row][cell];
-                        if(gridItem.dataset.value.length > 2) gridItem.style.fontSize = `${Math.floor(1000 / minesweeper.size) / 3}px`;
+                        if(gridItem.innerText.length > 2) gridItem.style.fontSize = `${Math.floor(1000 / minesweeper.size) / 3}px`;
                     }
     
                     gridItem.dataset.rotation = 0;
